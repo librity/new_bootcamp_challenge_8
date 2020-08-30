@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { View } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
-import { View, Image } from 'react-native';
-
-import formatValue from '../../utils/formatValue';
 import { useCart } from '../../hooks/cart';
+import formatValue from '../../utils/formatValue';
 import api from '../../services/api';
-
-import FloatingCart from '../../components/FloatingCart';
 
 import {
   Container,
@@ -20,6 +17,7 @@ import {
   ProductPrice,
   ProductButton,
 } from './styles';
+import FloatingCart from '../../components/FloatingCart';
 
 interface Product {
   id: string;
@@ -35,14 +33,16 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
-      // TODO
+      const { data } = await api.get('/products');
+
+      setProducts(data);
     }
 
     loadProducts();
-  }, []);
+  }, [setProducts]);
 
   function handleAddToCart(item: Product): void {
-    // TODO
+    addToCart(item);
   }
 
   return (
@@ -59,8 +59,10 @@ const Dashboard: React.FC = () => {
             <Product>
               <ProductImage source={{ uri: item.image_url }} />
               <ProductTitle>{item.title}</ProductTitle>
+
               <PriceContainer>
                 <ProductPrice>{formatValue(item.price)}</ProductPrice>
+
                 <ProductButton
                   testID={`add-to-cart-${item.id}`}
                   onPress={() => handleAddToCart(item)}
@@ -72,6 +74,7 @@ const Dashboard: React.FC = () => {
           )}
         />
       </ProductContainer>
+
       <FloatingCart />
     </Container>
   );
